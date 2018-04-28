@@ -3,4 +3,8 @@
     <color name="colorPrimary">#51177D</color>
     <color name="colorPrimaryDark">#3F1161</color>
     <color name="colorAccent">#FFD62F</color>
+    <color name="midnightBlue">#2C3E50</color>
+    <color name="wetBlue">#788EA4</color>
+    <color name="silver">#BDC3C7</color>
+    <color name="clouds">#ECF0F1</color>
 </resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/repo_list_item_favorite"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@null"
+        android:scaleType="center"
+        android:src="@drawable/ic_star"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/repo_list_item_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingBottom="8dp"
+        android:textColor="@color/midnightBlue"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/repo_list_item_favorite"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Repository name" />
+
+    <TextView
+        android:id="@+id/repo_list_item_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="5"
+        android:paddingBottom="16dp"
+        android:textColor="@color/midnightBlue"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/repo_list_item_favorite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repo_list_item_name"
+        tools:text="Some description\non two lines" />
+
+    <TextView
+        android:id="@+id/repo_list_item_updated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/wetBlue"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/repo_list_item_favorite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repo_list_item_description"
+        tools:text="Updated on 14 Apr. 2018" />
+
+</android.support.constraint.ConstraintLayout>
