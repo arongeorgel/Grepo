@@ -14,18 +14,36 @@ import kotterknife.bindView
  * @version 1.0.0
  */
 class RepoListAdapter constructor(
-        val list: MutableList<Repository> = ArrayList()
-) : RecyclerView.Adapter<RepoListAdapter.RepoViewHolder>() {
+        val list: MutableList<Repository> = ArrayList(),
+        var showLoader: Boolean = false
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.repo_list_adapter_item, parent, false)
-        return RepoViewHolder(view)
+    companion object {
+        const val TYPE_ITEM = 0x0
+        const val TYPE_LOADING = 0x1
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemViewType(position: Int): Int =
+            if (showLoader && position == list.size) TYPE_LOADING else TYPE_ITEM
 
-    override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_LOADING -> LoadingViewHolder(
+                    inflater.inflate(R.layout.repo_list_adapter_item_loading, parent, false))
+            TYPE_ITEM -> RepoViewHolder(
+                    inflater.inflate(R.layout.repo_list_adapter_item, parent, false))
+            else -> throw RuntimeException("Unknown view type $viewType")
+        }
+    }
+
+    override fun getItemCount(): Int = if (showLoader) list.size + 1 else list.size
+
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+        if (showLoader && position == list.size) return
+
         val repository = list[position]
+        val holder = viewHolder as RepoViewHolder
 
         holder.repoName.text = repository.name
         holder.repoDescription.text = repository.description
@@ -38,4 +56,6 @@ class RepoListAdapter constructor(
         val repoDescription: TextView by bindView(R.id.repo_list_item_description)
         val repoLastUpdate: TextView by bindView(R.id.repo_list_item_updated)
     }
+
+    class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
