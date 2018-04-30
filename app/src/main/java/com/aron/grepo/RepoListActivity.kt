@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.aron.grepo.db.RepositoryEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotterknife.bindView
@@ -15,7 +16,7 @@ class RepoListActivity : AppCompatActivity(), EndlessScrollListener.LoadMoreList
     private val refreshList: SwipeRefreshLayout by bindView(R.id.repo_list_refresh)
 
     private val listAdapter = RepoListAdapter()
-    private val useCase = GetUserRepoUseCase(Schedulers.io())
+    private val useCase = GetUserRepoUseCase(Schedulers.io(), RepositoryEntity())
     private lateinit var scrollListener: EndlessScrollListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,6 @@ class RepoListActivity : AppCompatActivity(), EndlessScrollListener.LoadMoreList
             refreshList.isRefreshing = true
         } else {
             listAdapter.showLoader = true
-            listAdapter.notifyDataSetChanged()
         }
 
         useCase.execute()

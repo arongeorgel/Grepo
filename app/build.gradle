@@ -11,7 +11,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,6 +25,10 @@ android {
     }
 }
 
+realm {
+    syncEnabled = true
+}
+
 dependencies {
     implementation project(':grepo')
 
@@ -35,7 +39,7 @@ dependencies {
 
     implementation 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
     implementation 'com.google.dagger:dagger:2.5'
 
     kapt 'com.google.dagger:dagger-compiler:2.5'

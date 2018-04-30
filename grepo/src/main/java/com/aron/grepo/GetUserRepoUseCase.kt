@@ -1,6 +1,8 @@
 package com.aron.grepo
 
-import com.aron.grepo.models.Repository
+import com.aron.grepo.db.DatabaseEntity
+import com.aron.grepo.models.ApiRepository
+import com.aron.grepo.models.RepositoryModel
 import com.aron.grepo.models.UrlRel
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -13,14 +15,14 @@ import retrofit2.adapter.rxjava2.Result
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 /**
  * @author Georgel Aron
  * @since 28/04/2018
  * @version 1.0.0
  */
 class GetUserRepoUseCase constructor(
-        private val scheduler: Scheduler
+        private val scheduler: Scheduler,
+        private val databaseEntity: DatabaseEntity<ApiRepository, RepositoryModel>
 ) {
 
     companion object {
@@ -47,24 +49,27 @@ class GetUserRepoUseCase constructor(
         githubApi = retrofit.create(GithubApi::class.java)
     }
 
-    fun execute(): Observable<List<Repository>> {
+    fun execute(): Observable<List<RepositoryModel>> {
         return when {
             currentPage < totalPages ->
                 githubApi.getRepo("JakeWharton", ITEMS_PER_PAGE, ++currentPage)
                         .compose(a)
+                        .switchMap { list ->
+                            databaseEntity.saveAll(list)
+                        }
                         .subscribeOn(scheduler)
 
             else -> Observable.just(emptyList())
         }
     }
 
-    var a: ObservableTransformer<Result<List<Repository>>, List<Repository>> = ObservableTransformer {
+    var a: ObservableTransformer<Result<List<ApiRepository>>, List<ApiRepository>> = ObservableTransformer {
         it.map { result ->
             when {
             // TODO return some error as well
-                result.isError -> return@map emptyList<Repository>()
+                result.isError -> return@map emptyList<ApiRepository>()
                 else -> {
-                    val response = result.response() ?: return@map emptyList<Repository>()
+                    val response = result.response() ?: return@map emptyList<ApiRepository>()
 
                     val links = GithubHeaderParser.getNavigationLinks(response.headers())
                     for (link in links) {
@@ -72,8 +77,6 @@ class GetUserRepoUseCase constructor(
                             totalPages = getLastPageNumber(link.httpUrl)
                         }
                     }
-                    println("Total pages: $totalPages")
-
                     return@map result.response()!!.body()
                 }
             }

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.aron.grepo.models.Repository
+import com.aron.grepo.models.RepositoryModel
 import kotterknife.bindView
 
 /**
@@ -14,7 +14,7 @@ import kotterknife.bindView
  * @version 1.0.0
  */
 class RepoListAdapter constructor(
-        val list: MutableList<Repository> = ArrayList(),
+        val list: MutableList<RepositoryModel> = ArrayList(),
         var showLoader: Boolean = false
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

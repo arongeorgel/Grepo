@@ -1,7 +1,5 @@
 package com.aron.grepo.models
 
-import java.net.URL
-
 /**
  * @author Georgel Aron
  * @since 29/04/2018

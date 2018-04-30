@@ -1,6 +1,6 @@
 package com.aron.grepo
 
-import com.aron.grepo.models.Repository
+import com.aron.grepo.models.ApiRepository
 import io.reactivex.Observable
 import retrofit2.adapter.rxjava2.Result
 import retrofit2.http.GET
@@ -18,5 +18,5 @@ interface GithubApi {
     fun getRepo(@Path("user") user: String,
                 @Query("per_page") items: Int,
                 @Query("page") page: Int
-    ): Observable<Result<List<Repository>>>
+    ): Observable<Result<List<ApiRepository>>>
 }

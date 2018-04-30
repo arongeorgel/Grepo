@@ -29,7 +29,6 @@ class EndlessScrollListener (
         totalItemCount = layoutManager.itemCount
         lastVisibleItem = layoutManager.findLastVisibleItemPosition()
         if (totalItemCount <= (lastVisibleItem + ITEM_THRESHOLD) && !loading.getAndSet(true)) {
-            Log.wtf("TAG", "loading: $totalItemCount, $lastVisibleItem")
             loadMoreListener.onLoadMore()
         }
     }
