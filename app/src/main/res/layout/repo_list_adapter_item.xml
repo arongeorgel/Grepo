@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/repo_list_item_name"
+        android:id="@+id/repositories_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -32,7 +32,7 @@
         tools:text="Repository name" />
 
     <TextView
-        android:id="@+id/repo_list_item_description"
+        android:id="@+id/repositories_item_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:maxLines="5"
@@ -41,18 +41,18 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@id/repo_list_item_favorite"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/repo_list_item_name"
+        app:layout_constraintTop_toBottomOf="@id/repositories_item_name"
         tools:text="Some description\non two lines" />
 
     <TextView
-        android:id="@+id/repo_list_item_updated"
+        android:id="@+id/repositories_item_updated"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/wetBlue"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@id/repo_list_item_favorite"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/repo_list_item_description"
+        app:layout_constraintTop_toBottomOf="@id/repositories_item_description"
         tools:text="Updated on 14 Apr. 2018" />
 
 </android.support.constraint.ConstraintLayout>

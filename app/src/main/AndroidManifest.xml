@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:name=".GrepoApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".RepoListActivity">
+        <activity android:name=".repositories.RepositoriesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

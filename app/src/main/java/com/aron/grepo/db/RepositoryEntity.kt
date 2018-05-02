@@ -1,6 +1,5 @@
 package com.aron.grepo.db
 
-import android.util.Log
 import com.aron.grepo.models.ApiRepository
 import com.aron.grepo.models.RepositoryModel
 import com.aron.grepo.rx.RealmRx
@@ -76,7 +75,6 @@ class RepositoryEntity : DatabaseEntity<ApiRepository, RepositoryModel> {
                     description = it.description,
                     lastUpdate = it.lastUpdate
             )
-            Log.d(RepositoryEntity::class.java.simpleName, "Saving $realmRepo")
 
             realmList.add(realmRepo)
         }
@@ -101,9 +99,9 @@ open class RealmRepository @JvmOverloads constructor(
         @PrimaryKey
         var uid: Long = 0,
         var name: String = "",
-        var description: String = "",
+        var description: String? = "",
         var isFavorite: Boolean = false,
-        var lastUpdate: String? = ""
+        var lastUpdate: String = ""
 ) : RealmObject() {
 
     override fun toString(): String {

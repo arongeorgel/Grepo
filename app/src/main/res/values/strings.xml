@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Grepo</string>
+    <string name="repo_list_retry">RETRY</string>
 </resources>

@@ -2,6 +2,7 @@ package com.aron.grepo
 
 import android.app.Application
 import io.realm.Realm
+import timber.log.Timber
 
 /**
  * @author Georgel Aron
@@ -13,6 +14,7 @@ class GrepoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Realm.init(this);
+        Realm.init(this)
+        Timber.plant(Timber.DebugTree())
     }
 }

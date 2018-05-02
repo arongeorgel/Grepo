@@ -3,6 +3,8 @@ package com.aron.grepo
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import io.reactivex.Observable
+import io.reactivex.Observer
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -28,7 +30,9 @@ class EndlessScrollListener (
 
         totalItemCount = layoutManager.itemCount
         lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-        if (totalItemCount <= (lastVisibleItem + ITEM_THRESHOLD) && !loading.getAndSet(true)) {
+        val nextCount = lastVisibleItem + ITEM_THRESHOLD
+
+        if (totalItemCount <= nextCount && !loading.getAndSet(true)) {
             loadMoreListener.onLoadMore()
         }
     }

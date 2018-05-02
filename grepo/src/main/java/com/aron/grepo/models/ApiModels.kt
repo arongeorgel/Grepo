@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
 data class ApiRepository(
         val id: String,
         val name: String,
-        val description: String = "",
+        val description: String? = "",
         @SerializedName("updated_at") val lastUpdate: String = ""
 )
 
