@@ -1,5 +1,6 @@
 package com.aron.grepo.repositories
 
+import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 import com.aron.grepo.R
 import com.aron.grepo.models.RepositoryModel
 import kotterknife.bindView
+import java.text.SimpleDateFormat
 
 /**
  * @author Georgel Aron
@@ -48,7 +50,7 @@ class RepositoriesAdapter constructor(
 
         holder.repoName.text = repository.name
         holder.repoDescription.text = repository.description
-        holder.repoLastUpdate.text = repository.lastUpdate
+        holder.repoLastUpdate.text = formatDate(repository.lastUpdate)
     }
 
     class RepoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -59,4 +61,12 @@ class RepositoriesAdapter constructor(
     }
 
     class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    @SuppressLint("SimpleDateFormat")
+    private fun formatDate(date: String): String {
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val uiFormat = SimpleDateFormat("'Last update on' yyyy-MM-dd HH:mm")
+
+        return uiFormat.format(apiFormat.parse(date))
+    }
 }

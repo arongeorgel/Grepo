@@ -9,11 +9,12 @@ import io.reactivex.Observable
  * @since 29/04/2018
  * @version 1.0.0
  */
-interface DatabaseEntity<in T, R> {
 
-    fun save(entity: T): Observable<R>
-    fun saveAll(list: List<T>): Observable<List<R>>
-    fun read(entityId: String): Observable<R>
-    fun readAll(): Observable<List<R>>
-    fun readBatch(firstIndex: Int, lastIndex: Int): Observable<List<R>>
+interface DatabaseEntity {
+
+    fun save(entity: ApiRepository): Observable<RepositoryModel>
+    fun saveAll(list: List<ApiRepository>): Observable<List<RepositoryModel>>
+    fun read(entityId: String): Observable<RepositoryModel>
+    fun readAll(): Observable<List<RepositoryModel>>
+    fun readBatch(firstIndex: Int, lastIndex: Int): Observable<List<RepositoryModel>>
 }

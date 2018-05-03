@@ -22,12 +22,21 @@ sealed class RepositoriesAction {
 
 sealed class RepositoriesResult {
 
-    object InProgress : RepositoriesResult()
-    data class Success(val list: List<RepositoryModel>) : RepositoriesResult()
+    data class InProgress(
+            val dataLoading: Boolean,
+            val networkRefresh: Boolean
+    ) : RepositoriesResult()
+
+    data class Success(
+            val isNewSet: Boolean,
+            val list: List<RepositoryModel>
+    ) : RepositoriesResult()
+
     data class Error(val errorMessage: String) : RepositoriesResult()
 }
 
 data class RepositoriesState(
+        val isNewSet: Boolean = false,
         val networkRefresh: Boolean = false,
         val dataLoading: Boolean = false,
         val list: List<RepositoryModel> = emptyList(),

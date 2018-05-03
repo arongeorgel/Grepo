@@ -10,19 +10,26 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.RealmResults
 import io.realm.annotations.PrimaryKey
+import javax.inject.Inject
 
 /**
  * @author Georgel Aron
  * @since 29/04/2018
  * @version 1.0.0
  */
-class RepositoryEntity : DatabaseEntity<ApiRepository, RepositoryModel> {
+class RepositoryEntity @Inject constructor() : DatabaseEntity {
 
     override fun readBatch(firstIndex: Int, lastIndex: Int): Observable<List<RepositoryModel>> = RealmRx
             .getResults(Function<Realm, RealmResults<RealmRepository>> {
                 it.where(RealmRepository::class.java).findAll()
             })
-            .map { realmModelListToUiModelList(it.slice(IntRange(firstIndex, lastIndex))) }
+            .map {
+                if (it.size > 0) {
+                    realmModelListToUiModelList(it.slice(IntRange(firstIndex, lastIndex)))
+                } else {
+                    realmModelListToUiModelList(it)
+                }
+            }
 
     override fun read(entityId: String): Observable<RepositoryModel> = RealmRx
             .executeEntity(Function {

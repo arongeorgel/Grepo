@@ -1,47 +1,42 @@
 package com.aron.grepo.repositories
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.TextView
 import com.aron.grepo.EndlessScrollListener
-import com.aron.grepo.GetRepositoriesUseCase
+import com.aron.grepo.GrepoApplication
 import com.aron.grepo.R
-import com.aron.grepo.db.RepositoryEntity
-import com.aron.grepo.network.InternetConnectivity
-import com.aron.grepo.network.InternetConnectivity.InternetConnectivityStatus.*
 import com.jakewharton.rxbinding2.support.v4.widget.RxSwipeRefreshLayout
+import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import kotterknife.bindView
-import timber.log.Timber
+import javax.inject.Inject
 
-class RepositoriesActivity : AppCompatActivity(), EndlessScrollListener.LoadMoreListener, InternetConnectivity {
+class RepositoriesActivity : AppCompatActivity(), EndlessScrollListener.LoadMoreListener {
 
     private val loadMorePublisher = PublishSubject.create<Any>()
+    private val disposable = CompositeDisposable()
 
     private val swipeRefreshLayout: SwipeRefreshLayout by bindView(R.id.repositories_swipe_refresh)
     private val repoList: RecyclerView by bindView(R.id.repositories_list)
-    private val errorView: TextView by bindView(R.id.repo_list_item_footer_error)
-    private val retryView: View by bindView(R.id.repo_list_item_footer_retry)
 
     private val listAdapter = RepositoriesAdapter()
     private lateinit var scrollListener: EndlessScrollListener
 
-    private lateinit var presenter: RepositoriesPresenter
-    private lateinit var interactor: RepositoriesInteractor
-    private lateinit var useCase: GetRepositoriesUseCase
+    @Inject
+    lateinit var presenter: RepositoriesPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.repositories_activity)
+
+        inject()
 
         val layoutManager = LinearLayoutManager(this)
         scrollListener = EndlessScrollListener(layoutManager, this)
@@ -50,62 +45,51 @@ class RepositoriesActivity : AppCompatActivity(), EndlessScrollListener.LoadMore
         repoList.adapter = listAdapter
         repoList.addOnScrollListener(scrollListener)
 
-        inject()
-
-        presenter.execute(intentions())
+        disposable.add(presenter.execute(intentions())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::render)
+                .subscribe(this::render))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable.dispose()
     }
 
     private fun inject() {
-        useCase = GetRepositoriesUseCase(RepositoryEntity(), this)
-        interactor = RepositoriesInteractor(useCase, Schedulers.io())
-        presenter = RepositoriesPresenter(interactor)
+        (application as GrepoApplication).appComponent
+                .repositoriesComponentBuilder()
+                .activity(this)
+                .build()
+                .inject(this)
     }
 
     override fun onLoadMore() {
         loadMorePublisher.onNext(Any())
     }
 
-    override fun connectionStatus(): Observable<InternetConnectivity.InternetConnectivityStatus> {
-        val connectivityManager: ConnectivityManager =
-                getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        val networkInfo = connectivityManager.activeNetworkInfo
-        val isConnected = networkInfo != null && networkInfo.isConnected
-
-        return Observable.just(if (isConnected) CONNECTED else DISCONNECTED)
-    }
-
     private fun intentions(): Observable<RepositoriesIntent> {
         return Observable.merge(
-                Observable.just(RepositoriesIntent.InitialIntent)
-                        .doOnNext { Timber.w("initial intent") },
+                Observable.just(RepositoriesIntent.InitialIntent),
                 RxSwipeRefreshLayout.refreshes(swipeRefreshLayout)
-                        .doOnNext { Timber.w("refresh intent") }
                         .map { RepositoriesIntent.RefreshIntent },
                 loadMorePublisher
-                        .skip(1)
-                        .doOnNext { Timber.w("load more intent") }
                         .map { RepositoriesIntent.LoadNextBatch }
         )
     }
 
     private fun render(it: RepositoriesState) {
         swipeRefreshLayout.isRefreshing = it.networkRefresh
-        listAdapter.showLoader = it.dataLoading
+        listAdapter.showLoader = it.dataLoading && !it.networkRefresh
         scrollListener.loading.set(false)
 
         if (it.isError) {
-            errorView.text = it.errorMessage
-            errorView.visibility = View.VISIBLE
-            retryView.visibility = View.VISIBLE
-        } else {
-            errorView.visibility = View.GONE
-            retryView.visibility = View.GONE
+            Snackbar.make(swipeRefreshLayout, it.errorMessage, Snackbar.LENGTH_LONG).show()
         }
 
-        listAdapter.list.clear()
+        if (it.isNewSet) {
+            listAdapter.list.clear()
+        }
+
         listAdapter.list.addAll(it.list)
         listAdapter.notifyDataSetChanged()
     }

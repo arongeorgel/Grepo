@@ -10,6 +10,8 @@ import io.realm.exceptions.RealmException
 import java.util.concurrent.atomic.AtomicBoolean
 import io.realm.RealmList
 import io.realm.RealmResults
+import io.realm.log.RealmLog
+import timber.log.Timber
 
 
 /**
@@ -22,38 +24,36 @@ abstract class OnSubscribeRealm<T> : Observable<T>() {
     override fun subscribeActual(observer: Observer<in T>) {
         val realm = Realm.getDefaultInstance()
 
-        val disposable = Listener(observer, realm)
+        val disposable = Listener()
         observer.onSubscribe(disposable)
 
         val entity: T
         realm.beginTransaction()
         try {
             entity = get(realm)
-            realm.commitTransaction()
             observer.onNext(entity)
-        } catch (e: RuntimeException) {
-            realm.cancelTransaction()
+            realm.commitTransaction()
+        } catch (e: Throwable) {
+            if (realm.isInTransaction) {
+                realm.cancelTransaction()
+            } else {
+                Timber.w("Could not cancel transaction, not currently in a transaction.")
+            }
+            Timber.w(e, "Failed to execute transaction")
             observer.onError(RealmException("Error during transaction.", e))
+        } finally {
+            realm.close()
         }
     }
 
-    internal class Listener<T>(
-            private val observer: Observer<in T>,
-            private val realm: Realm
-    ) : Disposable {
+    internal class Listener : Disposable {
 
-        private val unsubscribed = AtomicBoolean()
+        private val unsubscribed = AtomicBoolean(false)
 
         override fun isDisposed(): Boolean = unsubscribed.get()
 
         override fun dispose() {
-            if (unsubscribed.compareAndSet(false, true)) {
-                try {
-                    realm.close()
-                } catch (e: Exception) {
-                    observer.onError(e)
-                }
-            }
+            unsubscribed.compareAndSet(false, true)
         }
 
     }
