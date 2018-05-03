@@ -7,7 +7,6 @@ import com.aron.grepo.GithubHeaderParser
 import com.aron.grepo.NetworkPagination
 import com.aron.grepo.db.DatabaseEntity
 import com.aron.grepo.models.ApiRepository
-import com.aron.grepo.models.RepositoryModel
 import com.aron.grepo.models.UrlRel
 import com.aron.grepo.network.ErrorState
 import com.aron.grepo.network.InternetConnectivity
@@ -40,7 +39,7 @@ class GetRepositoriesUseCase @Inject constructor(
     private var shouldUpdatePageNumber: Boolean = false
 
     fun execute(networkRefresh: Boolean): Observable<RepositoriesResult> {
-        if(inProgress.getAndSet(true)) return Observable.empty()
+        if (inProgress.getAndSet(true)) return Observable.empty()
 
         if (networkRefresh) {
             Timber.d("Requesting fresh data.")
