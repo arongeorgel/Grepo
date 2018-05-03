@@ -1,5 +1,6 @@
 package com.aron.grepo.repositories
 
+import com.aron.grepo.mvi.Interactor
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Scheduler
@@ -15,7 +16,7 @@ import javax.inject.Named
 class RepositoriesInteractor @Inject constructor(
         private val useCase: GetRepositoriesUseCase,
         @Named("scheduler-io") private val scheduler: Scheduler
-) {
+) : Interactor<RepositoriesAction, RepositoriesResult>() {
 
     private var firstBatchProcessor = ObservableTransformer<RepositoriesAction, RepositoriesResult> {
         it.switchMap {
@@ -38,7 +39,7 @@ class RepositoriesInteractor @Inject constructor(
         }
     }
 
-    var actionsProcessor = ObservableTransformer<RepositoriesAction, RepositoriesResult> { actions ->
+    override fun actionsProcessor() = ObservableTransformer<RepositoriesAction, RepositoriesResult> { actions ->
         actions.publish { shared ->
             Observable.merge(
                     shared.ofType(RepositoriesAction.LoadFirstBatch::class.java)
